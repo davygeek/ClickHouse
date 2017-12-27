@@ -9,6 +9,8 @@ RUN apt-get update && \
     echo $repository | tee /etc/apt/sources.list.d/clickhouse.list && \
     apt-get update && \
     apt-get install --allow-unauthenticated -y clickhouse-server-common=$version clickhouse-server-base=$version && \
+    apt-get install -y net-tools && \
+    apt-get install -y vim && \
     rm -rf /var/lib/apt/lists/* /var/cache/debconf && \
     apt-get clean
 
@@ -16,7 +18,7 @@ RUN sed -i 's,<listen_host>127.0.0.1</listen_host>,<listen_host>0.0.0.0</listen_
     sed -i 's,<listen_host>::1</listen_host>,,' /etc/clickhouse-server/config.xml
 RUN chown -R clickhouse /etc/clickhouse-server/
 
-USER clickhouse
+#USER clickhouse
 EXPOSE 9000 8123 9009
 VOLUME /var/lib/clickhouse
 
