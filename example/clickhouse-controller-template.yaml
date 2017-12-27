@@ -1,0 +1,43 @@
+# clickhouse replication controller
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: clickhouse
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: clickhouse
+        app: clickhouse
+    spec:
+      containers:
+        - name: clickhouse
+          image: 192.168.212.19/vitesss/clickhouse-server:1.0.2
+          resources:
+            limits:
+              memory: "4G"
+              cpu: "2"
+          volumeMounts:
+            - mountPath: /etc/clickhouse-server/
+              name: config
+            - mountPath: /export
+              name: export
+          command:
+              - sh
+              - "-c"
+              - >-
+                /usr/bin/clickhouse-server --config=/etc/clickhouse-server/config.xml
+      volumes:
+        - name: config
+          configMap:
+            name: clickhouse-config
+        - name: export
+          flexVolume:
+            driver: "kubernetes.io/lvm"
+            fsType: "ext4"
+            options:
+              volumeID: "1514345546"
+              size: "50Gi"
+              volumegroup: "docker"
+
